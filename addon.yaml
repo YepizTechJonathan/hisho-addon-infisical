@@ -1,0 +1,43 @@
+# Infisical: a self-hosted secrets manager (open source, MIT core), run on the Core machine so
+# Hisho's secrets can live at home instead of in a cloud service. Runs in rootless Docker,
+# listens on 127.0.0.1 only and is published on the tailnet with `tailscale serve`.
+# After install: open the URL, create the first (admin) account, make a project and a machine
+# identity for Hisho, then point Hisho at it (Fleet.yaml secrets: backend: infisical).
+name: infisical
+title: Infisical secrets
+description: Self-hosted secrets manager on the Core machine (tailnet only).
+version: 0.1.1
+you_need:
+  - "Docker and Tailscale on the Core machine (Hisho sets both up)"
+
+options:
+  image: infisical/infisical:v0.166.3
+  port: 8085                       # on 127.0.0.1
+  https_port: 8443                 # tailscale serve, tailnet only
+schema:
+  image: str
+  port: port
+  https_port: port
+  site_url: url                    # e.g. https://<core>.<tailnet>.ts.net:8443
+requires:
+  commands: [docker, tailscale]
+
+services:
+  - {unit: hisho-infisical.service, label: Infisical (server, database, cache)}
+
+checks:
+  - name: Infisical answers
+    http: "http://127.0.0.1:{port}/api/status"
+    from: host
+    expect: 200
+    explain: "The self-hosted secrets server on the Core machine is not answering, so Hisho can't read secrets kept there. Restart Infisical on its card."
+  - name: Infisical on the tailnet
+    http: "{site_url}/api/status"
+    expect: 200
+    explain: "Infisical runs but its tailnet address doesn't answer. Re-run the add-on's install (it sets up tailscale serve)."
+
+links:
+  - {label: Open Infisical, url: "{site_url}"}
+
+install: bin/install.sh
+uninstall: bin/uninstall.sh

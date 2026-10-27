@@ -1,0 +1,40 @@
+# Infisical for Hisho. Images are pinned; the backend listens on 127.0.0.1 only.
+# Secrets for the server itself (ENCRYPTION_KEY, AUTH_SECRET, POSTGRES_PASSWORD) are in .env,
+# written once by bin/install.sh (0600). Losing ENCRYPTION_KEY loses every secret stored here.
+services:
+  backend:
+    container_name: infisical-backend
+    image: ${INFISICAL_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "127.0.0.1:${INFISICAL_PORT}:8080"
+    networks: [infisical]
+  redis:
+    container_name: infisical-redis
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    volumes: [redis_data:/data]
+    networks: [infisical]
+  db:
+    container_name: infisical-db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env
+    volumes: [pg_data:/var/lib/postgresql/data]
+    networks: [infisical]
+    healthcheck:
+      test: "pg_isready --username=$${POSTGRES_USER}"
+      interval: 5s
+      timeout: 10s
+      retries: 20
+volumes:
+  pg_data: {}
+  redis_data: {}
+networks:
+  infisical: {}
