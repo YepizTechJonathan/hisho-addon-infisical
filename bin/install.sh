@@ -21,10 +21,17 @@ if [ ! -f "$data/.env" ]; then
   } > "$data/.env"
   echo "wrote $data/.env (back up ENCRYPTION_KEY: without it the stored secrets can't be read)"
 fi
+# Its address: the setting, or this machine's tailnet name (a fresh Souko has nothing to type here).
+site="${HISHO_OPT_SITE_URL:-}"
+if [ -z "$site" ]; then
+  dns=$(tailscale status --json 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin)["Self"]["DNSName"].rstrip("."))' 2>/dev/null || true)
+  [ -n "$dns" ] || { echo "connect this machine to Tailscale first (Set up your Hisho > Tailscale)" >&2; exit 1; }
+  site="https://${dns}:${HISHO_OPT_HTTPS_PORT}"
+fi
 # settings that may change go in on every install
 grep -v -E '^(SITE_URL|INFISICAL_IMAGE|INFISICAL_PORT)=' "$data/.env" > "$data/.env.new" || true
 {
-  echo "SITE_URL=${HISHO_OPT_SITE_URL}"
+  echo "SITE_URL=${site}"
   echo "INFISICAL_IMAGE=${HISHO_OPT_IMAGE}"
   echo "INFISICAL_PORT=${HISHO_OPT_PORT}"
 } >> "$data/.env.new"
@@ -40,5 +47,7 @@ for i in $(seq 1 60); do
   sleep 5
 done
 curl -s -m 5 -o /dev/null -w "infisical local: %{http_code}\n" "http://127.0.0.1:${HISHO_OPT_PORT}/api/status"
-sudo -n tailscale serve --bg --https="${HISHO_OPT_HTTPS_PORT}" "http://127.0.0.1:${HISHO_OPT_PORT}" >/dev/null
-echo "published: ${HISHO_OPT_SITE_URL} (tailnet only)"
+# The owner is Tailscale's operator on a Souko (no sudo); elsewhere it publishes with sudo.
+tailscale serve --bg --https="${HISHO_OPT_HTTPS_PORT}" "http://127.0.0.1:${HISHO_OPT_PORT}" >/dev/null 2>&1 \
+  || sudo -n tailscale serve --bg --https="${HISHO_OPT_HTTPS_PORT}" "http://127.0.0.1:${HISHO_OPT_PORT}" >/dev/null
+echo "published: ${site} (tailnet only)"

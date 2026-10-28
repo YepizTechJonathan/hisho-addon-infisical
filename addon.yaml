@@ -6,7 +6,7 @@
 name: infisical
 title: Infisical secrets
 description: Self-hosted secrets manager on the Core machine (tailnet only).
-version: 0.1.1
+version: 0.1.2
 you_need:
   - "Docker and Tailscale on the Core machine (Hisho sets both up)"
 
@@ -18,7 +18,7 @@ schema:
   image: str
   port: port
   https_port: port
-  site_url: url                    # e.g. https://<core>.<tailnet>.ts.net:8443
+  site_url: url?                   # empty: https://<this machine's tailnet name>:<https_port>
 requires:
   commands: [docker, tailscale]
 

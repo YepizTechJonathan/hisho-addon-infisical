@@ -17,7 +17,7 @@ the server and its tailnet address answer, with Start / Stop / Restart.
   - `image` (str, default `infisical/infisical:v0.166.3`)
   - `port` (port, default `8085`)
   - `https_port` (port, default `8443`)
-  - `site_url` (url, required)
+  - `site_url` (url, optional)
 
 ## How to install
 
