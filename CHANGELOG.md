@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Memory ceilings for a desk PC: backend 1.5 GB, database 512 MB, Redis 256 MB (Infisical suggests about 2 GB for the whole stack).
+
 ## 0.2.1
 
 - bin/docker.sh borrows the docker group with sg only where sg exists: Arch has none, so the unit exited 127 on a fresh Souko (whose owner now owns Docker's socket, so plain docker works).

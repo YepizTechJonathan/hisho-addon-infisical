@@ -12,6 +12,7 @@ services:
     env_file: .env
     environment:
       - NODE_ENV=production
+    mem_limit: 1536m          # a desk PC: Infisical suggests ~2 GB for the whole stack
     ports:
       - "127.0.0.1:${INFISICAL_PORT}:8080"
     networks: [infisical]
@@ -19,12 +20,14 @@ services:
     container_name: infisical-redis
     image: redis:7.4-alpine
     restart: unless-stopped
+    mem_limit: 256m          # Infisical queues jobs in Redis: no eviction, just a ceiling
     volumes: [redis_data:/data]
     networks: [infisical]
   db:
     container_name: infisical-db
     image: postgres:16-alpine
     restart: unless-stopped
+    mem_limit: 512m
     env_file: .env
     volumes: [pg_data:/var/lib/postgresql/data]
     networks: [infisical]

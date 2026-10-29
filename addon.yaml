@@ -6,7 +6,7 @@
 name: infisical
 title: Infisical secrets
 description: Self-hosted secrets manager on the Core machine (tailnet only).
-version: 0.2.1
+version: 0.2.2
 you_need:
   - "Docker and Tailscale on the Core machine (Hisho sets both up)"
 
