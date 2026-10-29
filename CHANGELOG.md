@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- bin/docker.sh borrows the docker group with sg only where sg exists: Arch has none, so the unit exited 127 on a fresh Souko (whose owner now owns Docker's socket, so plain docker works).
+
 ## 0.2.0
 
 - Every field on its setup form says in plain words what it is, and links to where to get it (addon.yaml `help:`, shown by Hisho's dashboard).

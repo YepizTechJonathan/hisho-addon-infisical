@@ -37,6 +37,7 @@ def test_its_unit_uses_the_docker_this_machine_has_and_the_group_added_since_log
     assert "DOCKER_HOST" not in unit and "bin/docker.sh compose" in unit
     wrapper = (HERE / "bin" / "docker.sh").read_text()
     assert "/run/user/$uid/docker.sock" in wrapper and "exec sg docker" in wrapper
+    assert "command -v sg" in wrapper            # Arch has no sg: never a "command not found" (exit 127, 2026-10-29)
 
 
 def test_install_hands_its_address_to_hisho_and_runs_before_tailscale():

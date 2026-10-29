@@ -6,7 +6,8 @@ uid=$(id -u)
 if [ -z "${DOCKER_HOST:-}" ] && [ -S "/run/user/$uid/docker.sock" ]; then
   export DOCKER_HOST="unix:///run/user/$uid/docker.sock"
 fi
-if [ -z "${DOCKER_HOST:-}" ] && ! id -nG | tr ' ' '\n' | grep -qx docker \
+# (only where sg exists: Arch has none, and a Souko's owner owns Docker's socket instead, so plain docker works)
+if [ -z "${DOCKER_HOST:-}" ] && command -v sg >/dev/null && ! id -nG | tr ' ' '\n' | grep -qx docker \
    && getent group docker | cut -d: -f4 | tr ',' '\n' | grep -qx "$(id -un)"; then
   exec sg docker -c "docker $(printf '%q ' "$@")"
 fi
