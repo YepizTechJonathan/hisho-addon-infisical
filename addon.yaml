@@ -6,7 +6,7 @@
 name: infisical
 title: Infisical secrets
 description: Self-hosted secrets manager on the Core machine (tailnet only).
-version: 0.1.2
+version: 0.2.0
 you_need:
   - "Docker and Tailscale on the Core machine (Hisho sets both up)"
 
@@ -41,3 +41,20 @@ links:
 
 install: bin/install.sh
 uninstall: bin/uninstall.sh
+
+# Plain words for each setting (shown on the dashboard).
+help:
+  image:
+    label: Infisical version
+    say: "Which Infisical release runs (its Docker image). Leave it as it is: changing it upgrades or downgrades Infisical on the next install."
+    get: "https://hub.docker.com/r/infisical/infisical/tags"
+    get_label: See Infisical releases
+  port:
+    label: Local port
+    say: "The port Infisical listens on inside the Core machine only. Leave it as it is unless another program already uses it."
+  https_port:
+    label: Tailnet port
+    say: "The port your devices on the tailnet open Infisical at (with https). Leave it as it is unless another service already uses it."
+  site_url:
+    label: Infisical address (optional)
+    say: "The web address you open Infisical at, like https://core.example.ts.net:8443. Leave empty and Hisho uses this machine's tailnet name and the tailnet port."

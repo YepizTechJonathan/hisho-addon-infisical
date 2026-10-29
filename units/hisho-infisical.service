@@ -1,15 +1,15 @@
 [Unit]
-Description=Infisical secrets manager (Hisho add-on; rootless Docker compose)
+Description=Infisical secrets manager (Hisho add-on; Docker compose)
 After=docker.service
 Wants=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-Environment=DOCKER_HOST=unix:///run/user/%U/docker.sock
 WorkingDirectory=%h/.local/share/hisho/infisical
-ExecStart=/usr/bin/docker compose --env-file .env up -d --remove-orphans
-ExecStop=/usr/bin/docker compose --env-file .env down
+# bin/docker.sh: rootless Docker when the account has it, else the system's (also right after first boot)
+ExecStart=/bin/bash %h/code/hisho-addons/infisical/bin/docker.sh compose --env-file .env up -d --remove-orphans
+ExecStop=/bin/bash %h/code/hisho-addons/infisical/bin/docker.sh compose --env-file .env down
 TimeoutStartSec=600
 
 [Install]
